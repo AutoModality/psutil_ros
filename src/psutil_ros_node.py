@@ -41,7 +41,11 @@ from psutil_ros.msg import Network
 from psutil_ros.msg import Temperatures
 from psutil_ros.msg import SensorTemp
 
-# TODO: handle possible exceptions and empty values
+def if_valid(incoming_value,default_value):
+    """Returns the incoming_value if it is valid, otherwise returns the default"""
+    if incoming_value is not None:
+        return incoming_value
+    return default_value
 
 if __name__ == '__main__':
 
@@ -108,9 +112,12 @@ if __name__ == '__main__':
             for key, value in temps.iteritems():
                 sensor_temp_msg = SensorTemp()
                 sensor_temp_msg.label = key
-                sensor_temp_msg.current = value[0].current
-                sensor_temp_msg.high = value[0].high
-                sensor_temp_msg.critical = value[0].critical
+                if len(value) > 0:
+                    first_value = value[0]
+                    if first_value:
+                        sensor_temp_msg.current = if_valid(first_value.current,sensor_temp_msg.current)
+                        sensor_temp_msg.high = if_valid(first_value.high,sensor_temp_msg.high)
+                        sensor_temp_msg.critical = if_valid(first_value.critical,sensor_temp_msg.critical)
                 temps_msg.temps.append(sensor_temp_msg)
 
             temps_pub.publish(temps_msg)
