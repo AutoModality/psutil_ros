@@ -1,5 +1,7 @@
-# cpu usage percentage 0 - 100.0
+# overall cpu usage percentage 0.0 - 100.0
 float32 usage
+# per cpu usage 0.0 - 100.0
+float32[] usage_per
 
 # number of cpu physical cores
 uint8 physical_cores

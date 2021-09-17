@@ -79,6 +79,7 @@ if __name__ == '__main__':
 
         # ********* CPU *********
         cpu_msg.usage = if_valid(psutil.cpu_percent(interval=0),cpu_msg.usage)
+        cpu_msg.usage_per = if_valid(psutil.cpu_percent(interval=0,percpu=True),cpu_msg.usage_per)
 
         #ARM processors return None
         cpu_msg.physical_cores = if_valid(psutil.cpu_count(logical=False),cpu_msg.physical_cores)
