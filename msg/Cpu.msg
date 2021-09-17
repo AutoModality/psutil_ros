@@ -14,3 +14,4 @@ uint8 cores
 uint16 min_freq
 uint16 max_freq
 uint16 current_freq
+uint16[] current_freq_per

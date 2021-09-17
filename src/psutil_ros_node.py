@@ -88,7 +88,14 @@ if __name__ == '__main__':
         cpu_msg.current_freq = if_valid(frequency.current, cpu_msg.current_freq)
         cpu_msg.min_freq = if_valid(frequency.min, cpu_msg.min_freq)
         cpu_msg.max_freq = if_valid(frequency.max, cpu_msg.max_freq)
-
+        frequency_per=psutil.cpu_freq(percpu=True)
+        # require more than one, otherwise it is the same as current_freq
+        if frequency_per and len(frequency_per)>1:
+            currents_per=[]
+            for freq in frequency_per:
+                currents_per.append(freq.current)
+            cpu_msg.current_freq_per=currents_per
+        
         # read cpu data only after first cycle, because we are using interval=0, and psutil'''
         # documentation says in this case, the first read should be ignored'''
         if not is_first and publish_cpu:
