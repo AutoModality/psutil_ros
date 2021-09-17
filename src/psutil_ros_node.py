@@ -78,16 +78,15 @@ if __name__ == '__main__':
         network_msg = Network()
 
         # ********* CPU *********
-        cpu_msg.usage = psutil.cpu_percent(interval=0)
+        cpu_msg.usage = if_valid(psutil.cpu_percent(interval=0),cpu_msg.usage)
 
         #ARM processors return None
-        physical_cores = psutil.cpu_count(logical=False)
-        if physical_cores:
-            cpu_msg.physical_cores = physical_cores
-        cpu_msg.cores = psutil.cpu_count()
-        cpu_msg.current_freq = psutil.cpu_freq().current
-        cpu_msg.min_freq = psutil.cpu_freq().min
-        cpu_msg.max_freq = psutil.cpu_freq().max
+        cpu_msg.physical_cores = if_valid(psutil.cpu_count(logical=False),cpu_msg.physical_cores)
+        cpu_msg.cores = if_valid(psutil.cpu_count(), cpu_msg.cores)
+        frequency = psutil.cpu_freq()
+        cpu_msg.current_freq = if_valid(frequency.current, cpu_msg.current_freq)
+        cpu_msg.min_freq = if_valid(frequency.min, cpu_msg.min_freq)
+        cpu_msg.max_freq = if_valid(frequency.max, cpu_msg.max_freq)
 
         # read cpu data only after first cycle, because we are using interval=0, and psutil'''
         # documentation says in this case, the first read should be ignored'''
@@ -97,11 +96,11 @@ if __name__ == '__main__':
         # **** Virtual Memo *****
         if publish_memo:
             vm = psutil.virtual_memory()
-            memo_msg.total = vm.total
-            memo_msg.available = vm.available
-            memo_msg.used = vm.used
-            memo_msg.free = vm.free
-            memo_msg.percent = vm.percent
+            memo_msg.total = if_valid(vm.total, memo_msg.total)
+            memo_msg.available = if_valid(vm.available, memo_msg.available)
+            memo_msg.used = if_valid(vm.used, memo_msg.used)
+            memo_msg.free = if_valid(vm.free, memo_msg.free)
+            memo_msg.percent = if_valid(vm.percent, memo_msg.percent)
 
             mem_pub.publish(memo_msg)
 
@@ -125,14 +124,14 @@ if __name__ == '__main__':
         # ******* Network *******
         if publish_network:
             net = psutil.net_io_counters()
-            network_msg.bytes_sent = net.bytes_sent
-            network_msg.bytes_recv = net.bytes_recv
-            network_msg.packets_sent = net.packets_sent
-            network_msg.packets_recv = net.packets_recv
-            network_msg.errin = net.errin
-            network_msg.errout = net.errout
-            network_msg.dropin = net.dropin
-            network_msg.dropout = net.dropout
+            network_msg.bytes_sent = if_valid(net.bytes_sent,network_msg.bytes_sent)
+            network_msg.bytes_recv = if_valid(net.bytes_recv,network_msg.bytes_recv )
+            network_msg.packets_sent = if_valid(net.packets_sent,network_msg.packets_sent)
+            network_msg.packets_recv = if_valid(net.packets_recv,network_msg.packets_recv)
+            network_msg.errin = if_valid(net.errin,network_msg.errin)
+            network_msg.errout = if_valid(net.errout,network_msg.errout)
+            network_msg.dropin = if_valid(net.dropin,network_msg.dropin)
+            network_msg.dropout = if_valid(net.dropout,network_msg.dropout)
 
             network_pub.publish(network_msg)
 
